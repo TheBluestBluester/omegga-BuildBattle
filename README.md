@@ -20,7 +20,7 @@ remove it entirely if it is unnecessary.
 
 ## Install
 
-`omegga install gh:Bluester16/BuildBattle`
+`omegga install gh:TheBluestBluester/BuildBattle`
 
 _TODO: more steps...?_
 
