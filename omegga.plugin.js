@@ -3,13 +3,36 @@ const { brs } = OMEGGA_UTIL;
 let brsFile = fs.readFileSync(__dirname + "/Misc/BuildBattleArena.brs");
 const arenaBRS = brs.read(brsFile);
 
+let interval;
+
 let arenaScale = 32;
+let arenaVOffset = 1;
+
+let gameState = "WaitingForPlayers";
+let timer = 0;
+let index = 0;
+
+let arenaPosArray = {};
+let builds = {};
 
 module.exports = class Plugin {
 	constructor(omegga, config, store) {
 		this.omegga = omegga;
 		this.config = config;
 		this.store = store;
+	}
+	
+	async gameTick() {
+		
+		switch(gameState) {
+			
+			case "waitingForPlayers":
+				
+				timer++;
+				break;
+			
+		}
+		
 	}
 	
 	async initArenas() {
@@ -25,10 +48,11 @@ module.exports = class Plugin {
 			
 			const player = players[p];
 			
-			const randX = randomMinMax(-120000, 120000) * 10;
-			const randY = randomMinMax(-120000, 120000) * 10;
+			const randX = randomMinMax(-20000, 20000) * 10;
+			const randY = randomMinMax(-20000, 20000) * 10;
 			this.omegga.loadSaveData(arenaBRS, {quiet: true, offX: randX, offY: randY});
-			this.omegga.writeln("tp " + player.name + " " + randX + " " + randY + " 0 0");
+			this.omegga.writeln("Chat.Command /TP \"" + player.name + "\" " + randX + " " + randY + " 0 0");
+			arenaPosArray[player.name] = {pos: [randX, randY, arenaVOffset + arenaScale]};
 			
 		}
 		
@@ -40,10 +64,14 @@ module.exports = class Plugin {
 			this.initArenas();
 		});
 		
+		interval = setInterval(() => this.gameTick(), 1000);
+		
 		return { registeredCommands: ['test'] };
 	}
 	
 	async stop() {
-		// Anything that needs to be cleaned up...
+		
+		clearInterval(interval);
+		
 	}
 }
